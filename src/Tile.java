@@ -7,7 +7,7 @@ public class Tile implements ITile {
     }
 
     public Tile(Position position) {
-       this(position, ".");
+        this(position, ".");
     }
 
     public Tile(Position position, String shape) {
@@ -23,15 +23,20 @@ public class Tile implements ITile {
         return position;
     }
 
-    public int getX() {
+    public int getPositionX() {
         return position.getX();
     }
 
-    public int getY() {
+    public int getPositionY() {
         return position.getY();
     }
 
     public String getShape() {
         return shape;
+    }
+
+    @Override
+    public String toString() {
+        return this.shape;
     }
 }

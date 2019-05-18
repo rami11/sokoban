@@ -1,4 +1,6 @@
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Controller {
@@ -7,24 +9,32 @@ public class Controller {
             "resource/level10.txt"
     };
 
-    private Canvas canvas;
     private Player player;
+    private List<Edge> edges;
+    private List<Tile> tiles;
+    private List<Box> boxes;
+    private List<Target> targets;
+
+    private Canvas canvas;
 
     public Controller() {
+        edges = new ArrayList<>();
+        tiles = new ArrayList<>();
+        boxes = new ArrayList<>();
+        targets = new ArrayList<>();
+
         int levelNo = 0;
 
-        this.canvas = new Canvas(new File(LEVELS[levelNo]));
+        this.canvas = new Canvas(new File(LEVELS[levelNo]), this);
 
         Scanner scanner = new Scanner(System.in);
 
-        renderGame();
-
         while (true) {
-            renderGame();
+            refresh();
 
             String action = scanner.nextLine();
 
-            /*switch (action) {
+            switch (action) {
                 case "k":
                     stepUp();
                     break;
@@ -40,27 +50,74 @@ public class Controller {
                 case "q":
                     System.exit(0);
                     break;
-                default:*/
+                default:
+            }
         }
     }
 
-    private void renderGame() {
-        System.out.println(canvas);
+    public void refresh() {
+        ITile[][] canvas = this.canvas.getCanvas();
+
+        tiles.forEach(tile -> canvas[tile.getPositionX()][tile.getPositionY()] = tile);
+        targets.forEach(target -> canvas[target.getPositionX()][target.getPositionY()] = target);
+        boxes.forEach(box -> canvas[box.getPositionX()][box.getPositionY()] = box);
+        edges.forEach(edge -> canvas[edge.getPositionX()][edge.getPositionY()] = edge);
+
+        canvas[player.getPositionX()][player.getPositionY()] = player;
+
+        this.canvas.show();
     }
 
-    private boolean isThereRoomUp() {
-        return player.getX() > 0;
+    private void stepUp() {
+        Position newPosition = new Position(player.getPositionX() - 1, player.getPositionY());
+        if (canvas.isTile(newPosition)) {
+            player.stepUp();
+            refresh();
+        }
     }
 
-    private boolean isThereRoomDown() {
-        return player.getX() < canvas.getWidth() - 1;
+    private void stepDown() {
+        Position newPosition = new Position(player.getPositionX() + 1, player.getPositionY());
+        if (canvas.isTile(newPosition)) {
+            player.stepDown();
+            refresh();
+        }
     }
 
-    private boolean isThereRoomRight() {
-        return player.getY() < canvas.getLength() - 1;
+    private void stepLeft() {
+        Position newPosition = new Position(player.getPositionX(), player.getPositionY() - 1);
+        if (canvas.isTile(newPosition)) {
+            player.stepLeft();
+            refresh();
+        }
     }
 
-    private boolean isThereRoomLeft() {
-        return player.getY() > 0;
+    private void stepRight() {
+        Position newPosition = new Position(player.getPositionX(), player.getPositionY() + 1);
+        if (canvas.isTile(newPosition)) {
+            player.stepRight();
+            refresh();
+        }
     }
+
+    public void addTile(Tile tile) {
+        tiles.add(tile);
+    }
+
+    public void addEdge(Edge edge) {
+        edges.add(edge);
+    }
+
+    public void addBox(Box box) {
+        boxes.add(box);
+    }
+
+    public void addTarget(Target target) {
+        targets.add(target);
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
 }
