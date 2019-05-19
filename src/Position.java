@@ -22,7 +22,7 @@ public class Position {
         return y;
     }
 
-    public void incrementX() {
+    /*public void incrementX() {
         this.x++;
     }
 
@@ -36,7 +36,7 @@ public class Position {
 
     public void decrementY() {
         this.y--;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

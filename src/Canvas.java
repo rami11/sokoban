@@ -1,3 +1,5 @@
+import javafx.geometry.Pos;
+
 import java.io.*;
 import java.util.Arrays;
 
@@ -12,7 +14,6 @@ public class Canvas {
         this.controller = controller;
 
         loadLevel(levelFile);
-        System.out.println();
     }
 
     public int getWidth() {
@@ -55,6 +56,7 @@ public class Canvas {
                         case "x":
                             Box box = new Box(new Position(rowIndex, columnIndex));
                             controller.addBox(box);
+                            controller.addTile(new Tile(new Position(rowIndex, columnIndex)));
                             canvas[rowIndex][columnIndex] = box;
                             break;
                         case ".":
@@ -65,12 +67,15 @@ public class Canvas {
                         case "@":
                             Player player = new Player(new Position(rowIndex, columnIndex));
                             controller.setPlayer(player);
+
+                            controller.addTile(new Tile(new Position(rowIndex, columnIndex)));
                             canvas[rowIndex][columnIndex] = player;
                             break;
                     }
                 }
                 rowIndex++;
             }
+            show();
         } catch (NumberFormatException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -90,7 +95,7 @@ public class Canvas {
 
     public void show() {
         System.out.println(this);
-    };
+    }
 
     @Override
     public String toString() {

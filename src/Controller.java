@@ -30,21 +30,23 @@ public class Controller {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            refresh();
-
             String action = scanner.nextLine();
 
             switch (action) {
                 case "k":
+                case "w":
                     stepUp();
                     break;
                 case "j":
+                case "s":
                     stepDown();
                     break;
                 case "l":
+                case "d":
                     stepRight();
                     break;
                 case "h":
+                case "a":
                     stepLeft();
                     break;
                 case "q":
@@ -68,37 +70,33 @@ public class Controller {
         this.canvas.show();
     }
 
-    private void stepUp() {
-        Position newPosition = new Position(player.getPositionX() - 1, player.getPositionY());
-        if (canvas.isTile(newPosition)) {
-            player.stepUp();
-            refresh();
+    private void attemptGoTo(Position newPosition) {
+        if (isInsideCanvas(newPosition)) {
+            if (canvas.isTile(newPosition)) {
+                player.goTo(newPosition);
+            } else if (canvas.isBox(newPosition)) {
+
+            }
         }
+        refresh();
+    }
+
+    private void stepUp() {
+        attemptGoTo(player.lookUp());
     }
 
     private void stepDown() {
-        Position newPosition = new Position(player.getPositionX() + 1, player.getPositionY());
-        if (canvas.isTile(newPosition)) {
-            player.stepDown();
-            refresh();
-        }
+        attemptGoTo(player.lookDown());
     }
 
     private void stepLeft() {
-        Position newPosition = new Position(player.getPositionX(), player.getPositionY() - 1);
-        if (canvas.isTile(newPosition)) {
-            player.stepLeft();
-            refresh();
-        }
+        attemptGoTo(player.lookLeft());
     }
 
     private void stepRight() {
-        Position newPosition = new Position(player.getPositionX(), player.getPositionY() + 1);
-        if (canvas.isTile(newPosition)) {
-            player.stepRight();
-            refresh();
-        }
+        attemptGoTo(player.lookRight());
     }
+
 
     public void addTile(Tile tile) {
         tiles.add(tile);
@@ -118,6 +116,10 @@ public class Controller {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    private boolean isInsideCanvas(Position position) {
+        return position.getX() < canvas.getWidth() && position.getY() < canvas.getLength();
     }
 
 }
