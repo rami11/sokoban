@@ -1,5 +1,3 @@
-import javafx.geometry.Pos;
-
 import java.io.*;
 import java.util.Arrays;
 
@@ -91,6 +89,10 @@ public class Canvas {
 
     public boolean isBox(Position position) {
         return canvas[position.getX()][position.getY()] instanceof Box;
+    }
+
+    public boolean isTarget(Position position) {
+        return canvas[position.getX()][position.getY()] instanceof Target;
     }
 
     public void show() {

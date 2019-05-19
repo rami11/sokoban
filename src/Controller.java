@@ -1,7 +1,5 @@
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Controller {
     private static final String[] LEVELS = {
@@ -12,7 +10,7 @@ public class Controller {
     private Player player;
     private List<Edge> edges;
     private List<Tile> tiles;
-    private List<Box> boxes;
+    private Map<Position, Box> boxes;
     private List<Target> targets;
 
     private Canvas canvas;
@@ -20,7 +18,7 @@ public class Controller {
     public Controller() {
         edges = new ArrayList<>();
         tiles = new ArrayList<>();
-        boxes = new ArrayList<>();
+        boxes = new HashMap<>();
         targets = new ArrayList<>();
 
         int levelNo = 0;
@@ -35,25 +33,43 @@ public class Controller {
             switch (action) {
                 case "k":
                 case "w":
-                    stepUp();
+                    attemptGoTo(player.lookUp());
+                    Box box = boxes.get(player.lookUp());
+                    if (box != null) {
+                        attemptPush(box.getPosition(), box.lookUp());
+                    }
                     break;
                 case "j":
                 case "s":
-                    stepDown();
+                    attemptGoTo(player.lookDown());
+                    Box box1 = boxes.get(player.lookDown());
+                    if (box1 != null) {
+                        attemptPush(box1.getPosition(), box1.lookDown());
+                    }
                     break;
                 case "l":
                 case "d":
-                    stepRight();
+                    attemptGoTo(player.lookRight());
+                    Box box2 = boxes.get(player.lookRight());
+                    if (box2 != null) {
+                        attemptPush(box2.getPosition(), box2.lookRight());
+                    }
                     break;
                 case "h":
                 case "a":
-                    stepLeft();
+                    attemptGoTo(player.lookLeft());
+                    Box box3 = boxes.get(player.lookLeft());
+                    if (box3 != null) {
+                        attemptPush(box3.getPosition(), box3.lookLeft());
+                    }
                     break;
                 case "q":
                     System.exit(0);
                     break;
                 default:
+                    //ignore
             }
+            refresh();
         }
     }
 
@@ -62,9 +78,9 @@ public class Controller {
 
         tiles.forEach(tile -> canvas[tile.getPositionX()][tile.getPositionY()] = tile);
         targets.forEach(target -> canvas[target.getPositionX()][target.getPositionY()] = target);
-        boxes.forEach(box -> canvas[box.getPositionX()][box.getPositionY()] = box);
         edges.forEach(edge -> canvas[edge.getPositionX()][edge.getPositionY()] = edge);
 
+        boxes.values().forEach(box -> canvas[box.getPositionX()][box.getPositionY()] = box);
         canvas[player.getPositionX()][player.getPositionY()] = player;
 
         this.canvas.show();
@@ -72,28 +88,38 @@ public class Controller {
 
     private void attemptGoTo(Position newPosition) {
         if (isInsideCanvas(newPosition)) {
-            if (canvas.isTile(newPosition)) {
+            if (canvas.isTile(newPosition) || canvas.isTarget(newPosition)) {
                 player.goTo(newPosition);
-            } else if (canvas.isBox(newPosition)) {
+            }
+        }
+    }
+
+    private void attemptPush(Position oldPosition, Position newPosition) {
+        if (isInsideCanvas(newPosition)) {
+            if (canvas.isTile(newPosition) || canvas.isTarget(newPosition)) {
+                Box box = boxes.get(oldPosition);
+                player.setPosition(oldPosition);
+                box.setPosition(newPosition);
+
+            } else if (canvas.isTarget(newPosition)) {
 
             }
         }
-        refresh();
     }
 
-    private void stepUp() {
-        attemptGoTo(player.lookUp());
+    private void attemptStepUp(Position newPosition) {
+        attemptGoTo(newPosition);
     }
 
-    private void stepDown() {
+    private void attemptStepDown() {
         attemptGoTo(player.lookDown());
     }
 
-    private void stepLeft() {
+    private void attemptStepLeft() {
         attemptGoTo(player.lookLeft());
     }
 
-    private void stepRight() {
+    private void attemptStepRight() {
         attemptGoTo(player.lookRight());
     }
 
@@ -107,7 +133,7 @@ public class Controller {
     }
 
     public void addBox(Box box) {
-        boxes.add(box);
+        boxes.put(box.getPosition(), box);
     }
 
     public void addTarget(Target target) {
