@@ -4,8 +4,8 @@ import java.util.*;
 public class Controller {
     private static final String[] LEVELS = {
             "resource/level1.txt",
+            "resource/level2.txt",
             "resource/level10.txt",
-            "resource/test.txt",
     };
 
     private Player player;
@@ -61,7 +61,7 @@ public class Controller {
                         //ignore
                 }
                 refresh();
-                if (boxes.size() == redBoxes.size()) {
+                if (targets.size() == redBoxes.size()) {
                     System.err.println("Well done!\n");
                     levelNo++;
                     break;
@@ -172,7 +172,7 @@ public class Controller {
                 player.setPosition(oldPosition);
                 box.setPosition(newPosition);
 
-                //boxes.remove(oldPosition);
+                boxes.remove(oldPosition);
                 redBoxes.put(newPosition, new RedBox(newPosition));
             }
         }

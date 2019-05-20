@@ -66,6 +66,7 @@ public class Canvas {
                         case "X":
                             RedBox redBox = new RedBox(new Position(rowIndex, columnIndex));
                             controller.addRedBox(redBox);
+                            controller.addTarget(new Target(new Position(rowIndex, columnIndex)));
                             canvas[rowIndex][columnIndex] = redBox;
                             break;
                         case "@":
