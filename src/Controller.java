@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Controller {
     private static final String[] LEVELS = {
+            "resource/test.txt",
             "resource/level1.txt",
             "resource/level10.txt"
     };
@@ -10,8 +11,11 @@ public class Controller {
     private Player player;
     private List<Edge> edges;
     private List<Ground> tiles;
-    private Map<Position, Box> boxes;
+
     private List<Target> targets;
+
+    private Map<Position, Box> boxes;
+    private Map<Position, RedBox> redBoxes;
 
     private Canvas canvas;
 
@@ -20,6 +24,7 @@ public class Controller {
         tiles = new ArrayList<>();
         boxes = new HashMap<>();
         targets = new ArrayList<>();
+        redBoxes = new HashMap<>();
 
         int levelNo = 0;
 
@@ -33,35 +38,19 @@ public class Controller {
             switch (action) {
                 case "k":
                 case "w":
-                    attemptGoTo(player.lookUp());
-                    Box box = boxes.get(player.lookUp());
-                    if (box != null) {
-                        attemptPush(box.getPosition(), box.lookUp());
-                    }
+                    attemptStepUp(player.lookUp());
                     break;
                 case "j":
                 case "s":
-                    attemptGoTo(player.lookDown());
-                    Box box1 = boxes.get(player.lookDown());
-                    if (box1 != null) {
-                        attemptPush(box1.getPosition(), box1.lookDown());
-                    }
+                    attemptStepDown(player.lookDown());
                     break;
                 case "l":
                 case "d":
-                    attemptGoTo(player.lookRight());
-                    Box box2 = boxes.get(player.lookRight());
-                    if (box2 != null) {
-                        attemptPush(box2.getPosition(), box2.lookRight());
-                    }
+                    attemptStepRight(player.lookRight());
                     break;
                 case "h":
                 case "a":
-                    attemptGoTo(player.lookLeft());
-                    Box box3 = boxes.get(player.lookLeft());
-                    if (box3 != null) {
-                        attemptPush(box3.getPosition(), box3.lookLeft());
-                    }
+                    attemptStepLeft(player.lookLeft());
                     break;
                 case "q":
                     System.exit(0);
@@ -81,46 +70,126 @@ public class Controller {
         edges.forEach(edge -> canvas[edge.getPositionX()][edge.getPositionY()] = edge);
 
         boxes.values().forEach(box -> canvas[box.getPositionX()][box.getPositionY()] = box);
+        redBoxes.values().forEach(redBox -> canvas[redBox.getPositionX()][redBox.getPositionY()] = redBox);
         canvas[player.getPositionX()][player.getPositionY()] = player;
 
         this.canvas.show();
     }
 
-    private void attemptGoTo(Position newPosition) {
+    private void attemptStepUp(Position newPosition) {
         if (isInsideCanvas(newPosition)) {
             if (canvas.isGround(newPosition) || canvas.isTarget(newPosition)) {
                 player.goTo(newPosition);
+            } else if (canvas.isBox(newPosition)) {
+                Box box = boxes.get(player.lookUp());
+                if (box != null) {
+                    attemptPushBox(box.getPosition(), box.lookUp());
+                }
+            } else if (canvas.isRedBox(newPosition)) {
+                RedBox redBox = redBoxes.get(player.lookUp());
+                if (redBox != null) {
+                    attemptPushRedBox(redBox.getPosition(), redBox.lookUp());
+                }
             }
         }
     }
 
-    private void attemptPush(Position oldPosition, Position newPosition) {
+    private void attemptStepDown(Position newPosition) {
         if (isInsideCanvas(newPosition)) {
             if (canvas.isGround(newPosition) || canvas.isTarget(newPosition)) {
+                player.goTo(newPosition);
+            } else if (canvas.isBox(newPosition)) {
+                Box box = boxes.get(player.lookDown());
+                if (box != null) {
+                    attemptPushBox(box.getPosition(), box.lookDown());
+                }
+            } else if (canvas.isRedBox(newPosition)) {
+                RedBox redBox = redBoxes.get(player.lookDown());
+                if (redBox != null) {
+                    attemptPushRedBox(redBox.getPosition(), redBox.lookDown());
+                }
+            }
+        }
+    }
+
+    private void attemptStepLeft(Position newPosition) {
+        if (isInsideCanvas(newPosition)) {
+            if (canvas.isGround(newPosition) || canvas.isTarget(newPosition)) {
+                player.goTo(newPosition);
+            } else if (canvas.isBox(newPosition)) {
+                Box box = boxes.get(player.lookLeft());
+                if (box != null) {
+                    attemptPushBox(box.getPosition(), box.lookLeft());
+                }
+            } else if (canvas.isRedBox(newPosition)) {
+                RedBox redBox = redBoxes.get(player.lookLeft());
+                if (redBox != null) {
+                    attemptPushRedBox(redBox.getPosition(), redBox.lookLeft());
+                }
+            }
+        }
+    }
+
+    private void attemptStepRight(Position newPosition) {
+        if (isInsideCanvas(newPosition)) {
+            if (canvas.isGround(newPosition) || canvas.isTarget(newPosition)) {
+                player.goTo(newPosition);
+            } else if (canvas.isBox(newPosition)) {
+                Box box = boxes.get(player.lookRight());
+                if (box != null) {
+                    attemptPushBox(box.getPosition(), box.lookRight());
+                }
+            } else if (canvas.isRedBox(newPosition)) {
+                RedBox redBox = redBoxes.get(player.lookRight());
+                if (redBox != null) {
+                    attemptPushRedBox(redBox.getPosition(), redBox.lookRight());
+                }
+            }
+        }
+    }
+
+
+    private void attemptPushBox(Position oldPosition, Position newPosition) {
+        if (isInsideCanvas(newPosition)) {
+            if (canvas.isGround(newPosition)) {
                 Box box = boxes.get(oldPosition);
                 player.setPosition(oldPosition);
                 box.setPosition(newPosition);
 
-            } else if (canvas.isTarget(newPosition)) {
+                boxes.remove(oldPosition);
+                boxes.put(newPosition, box);
 
+            } else if (canvas.isTarget(newPosition)) {
+                Box box = boxes.get(oldPosition);
+                player.setPosition(oldPosition);
+                box.setPosition(newPosition);
+
+                boxes.remove(oldPosition);
+                //boxes.put(newPosition, box);
+                redBoxes.put(newPosition, new RedBox(newPosition));
             }
         }
     }
 
-    private void attemptStepUp(Position newPosition) {
-        attemptGoTo(newPosition);
-    }
+    private void attemptPushRedBox(Position oldPosition, Position newPosition) {
+        if (isInsideCanvas(newPosition)) {
+            if (canvas.isGround(newPosition)) {
+                RedBox redBox = redBoxes.get(oldPosition);
+                player.setPosition(oldPosition);
+                redBox.setPosition(newPosition);
 
-    private void attemptStepDown() {
-        attemptGoTo(player.lookDown());
-    }
+                redBoxes.remove(oldPosition);
+                boxes.put(newPosition, new Box(newPosition));
 
-    private void attemptStepLeft() {
-        attemptGoTo(player.lookLeft());
-    }
+            } else if (canvas.isTarget(newPosition)) {
+                RedBox redBox = redBoxes.get(oldPosition);
+                player.setPosition(oldPosition);
+                redBox.setPosition(newPosition);
 
-    private void attemptStepRight() {
-        attemptGoTo(player.lookRight());
+                redBoxes.remove(oldPosition);
+                redBoxes.put(newPosition, redBox);
+            }
+        }
     }
 
 
@@ -138,6 +207,10 @@ public class Controller {
 
     public void addTarget(Target target) {
         targets.add(target);
+    }
+
+    public void addRedBox(RedBox redBox) {
+        redBoxes.put(redBox.getPosition(), redBox);
     }
 
     public void setPlayer(Player player) {

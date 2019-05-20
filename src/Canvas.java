@@ -62,6 +62,11 @@ public class Canvas {
                             controller.addGround(ground);
                             canvas[rowIndex][columnIndex] = ground;
                             break;
+                        case "X":
+                            RedBox redBox = new RedBox(new Position(rowIndex, columnIndex));
+                            controller.addRedBox(redBox);
+                            canvas[rowIndex][columnIndex] = redBox;
+                            break;
                         case "@":
                             Player player = new Player(new Position(rowIndex, columnIndex));
                             controller.setPlayer(player);
@@ -80,6 +85,8 @@ public class Canvas {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -93,6 +100,14 @@ public class Canvas {
 
     public boolean isTarget(Position position) {
         return canvas[position.getX()][position.getY()] instanceof Target;
+    }
+
+    public boolean isEdge(Position position) {
+        return canvas[position.getX()][position.getY()] instanceof Edge;
+    }
+
+    public boolean isRedBox(Position position) {
+        return canvas[position.getX()][position.getY()] instanceof RedBox;
     }
 
     public void show() {
