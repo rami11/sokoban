@@ -3,9 +3,9 @@ import java.util.*;
 
 public class Controller {
     private static final String[] LEVELS = {
-            "resource/test.txt",
             "resource/level1.txt",
-            "resource/level10.txt"
+            "resource/level10.txt",
+            "resource/test.txt",
     };
 
     private Player player;
@@ -28,37 +28,45 @@ public class Controller {
 
         int levelNo = 0;
 
-        this.canvas = new Canvas(new File(LEVELS[levelNo]), this);
-
-        Scanner scanner = new Scanner(System.in);
-
         while (true) {
-            String action = scanner.nextLine();
+            System.out.println("Level " + levelNo + ":\n");
+            this.canvas = new Canvas(new File(LEVELS[levelNo]), this);
 
-            switch (action) {
-                case "k":
-                case "w":
-                    attemptStepUp(player.lookUp());
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                String action = scanner.nextLine();
+
+                switch (action) {
+                    case "k":
+                    case "w":
+                        attemptStepUp(player.lookUp());
+                        break;
+                    case "j":
+                    case "s":
+                        attemptStepDown(player.lookDown());
+                        break;
+                    case "l":
+                    case "d":
+                        attemptStepRight(player.lookRight());
+                        break;
+                    case "h":
+                    case "a":
+                        attemptStepLeft(player.lookLeft());
+                        break;
+                    case "q":
+                        System.exit(0);
+                        break;
+                    default:
+                        //ignore
+                }
+                refresh();
+                if (boxes.size() == redBoxes.size()) {
+                    System.err.println("Well done!\n");
+                    levelNo++;
                     break;
-                case "j":
-                case "s":
-                    attemptStepDown(player.lookDown());
-                    break;
-                case "l":
-                case "d":
-                    attemptStepRight(player.lookRight());
-                    break;
-                case "h":
-                case "a":
-                    attemptStepLeft(player.lookLeft());
-                    break;
-                case "q":
-                    System.exit(0);
-                    break;
-                default:
-                    //ignore
+                }
             }
-            refresh();
         }
     }
 
@@ -164,8 +172,7 @@ public class Controller {
                 player.setPosition(oldPosition);
                 box.setPosition(newPosition);
 
-                boxes.remove(oldPosition);
-                //boxes.put(newPosition, box);
+                //boxes.remove(oldPosition);
                 redBoxes.put(newPosition, new RedBox(newPosition));
             }
         }
@@ -221,4 +228,12 @@ public class Controller {
         return position.getX() < canvas.getWidth() && position.getY() < canvas.getLength();
     }
 
+    public void clearTiles() {
+        player = null;
+        edges.clear();
+        tiles.clear();
+        targets.clear();
+        boxes.clear();
+        redBoxes.clear();
+    }
 }

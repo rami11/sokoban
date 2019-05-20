@@ -10,6 +10,7 @@ public class Canvas {
 
     public Canvas(File levelFile, Controller controller) {
         this.controller = controller;
+        controller.clearTiles();
 
         loadLevel(levelFile);
     }
