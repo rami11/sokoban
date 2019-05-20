@@ -9,7 +9,7 @@ public class Controller {
 
     private Player player;
     private List<Edge> edges;
-    private List<Tile> tiles;
+    private List<Ground> tiles;
     private Map<Position, Box> boxes;
     private List<Target> targets;
 
@@ -74,7 +74,7 @@ public class Controller {
     }
 
     public void refresh() {
-        ITile[][] canvas = this.canvas.getCanvas();
+        Tile[][] canvas = this.canvas.getCanvas();
 
         tiles.forEach(tile -> canvas[tile.getPositionX()][tile.getPositionY()] = tile);
         targets.forEach(target -> canvas[target.getPositionX()][target.getPositionY()] = target);
@@ -88,7 +88,7 @@ public class Controller {
 
     private void attemptGoTo(Position newPosition) {
         if (isInsideCanvas(newPosition)) {
-            if (canvas.isTile(newPosition) || canvas.isTarget(newPosition)) {
+            if (canvas.isGround(newPosition) || canvas.isTarget(newPosition)) {
                 player.goTo(newPosition);
             }
         }
@@ -96,7 +96,7 @@ public class Controller {
 
     private void attemptPush(Position oldPosition, Position newPosition) {
         if (isInsideCanvas(newPosition)) {
-            if (canvas.isTile(newPosition) || canvas.isTarget(newPosition)) {
+            if (canvas.isGround(newPosition) || canvas.isTarget(newPosition)) {
                 Box box = boxes.get(oldPosition);
                 player.setPosition(oldPosition);
                 box.setPosition(newPosition);
@@ -124,8 +124,8 @@ public class Controller {
     }
 
 
-    public void addTile(Tile tile) {
-        tiles.add(tile);
+    public void addGround(Ground ground) {
+        tiles.add(ground);
     }
 
     public void addEdge(Edge edge) {

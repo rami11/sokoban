@@ -1,4 +1,4 @@
-public class Player extends Shape implements ITile {
+public class Player extends Shape implements Tile {
 
     public Player(Position position) {
         super(position, "R");

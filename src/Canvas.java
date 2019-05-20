@@ -4,7 +4,7 @@ import java.util.Arrays;
 public class Canvas {
 
     private int width, length;
-    private ITile[][] canvas;
+    private Tile[][] canvas;
 
     private Controller controller;
 
@@ -22,7 +22,7 @@ public class Canvas {
         return length;
     }
 
-    public ITile[][] getCanvas() {
+    public Tile[][] getCanvas() {
         return canvas;
     }
 
@@ -32,7 +32,7 @@ public class Canvas {
             width = Integer.parseInt(dimensions[0]);
             length = Integer.parseInt(dimensions[1]);
 
-            canvas = new ITile[width][length];
+            canvas = new Tile[width][length];
 
             int rowIndex = 0;
             String line;
@@ -54,19 +54,19 @@ public class Canvas {
                         case "x":
                             Box box = new Box(new Position(rowIndex, columnIndex));
                             controller.addBox(box);
-                            controller.addTile(new Tile(new Position(rowIndex, columnIndex)));
+                            controller.addGround(new Ground(new Position(rowIndex, columnIndex)));
                             canvas[rowIndex][columnIndex] = box;
                             break;
                         case ".":
-                            Tile tile = new Tile(new Position(rowIndex, columnIndex));
-                            controller.addTile(tile);
-                            canvas[rowIndex][columnIndex] = tile;
+                            Ground ground = new Ground(new Position(rowIndex, columnIndex));
+                            controller.addGround(ground);
+                            canvas[rowIndex][columnIndex] = ground;
                             break;
                         case "@":
                             Player player = new Player(new Position(rowIndex, columnIndex));
                             controller.setPlayer(player);
 
-                            controller.addTile(new Tile(new Position(rowIndex, columnIndex)));
+                            controller.addGround(new Ground(new Position(rowIndex, columnIndex)));
                             canvas[rowIndex][columnIndex] = player;
                             break;
                     }
@@ -83,8 +83,8 @@ public class Canvas {
         }
     }
 
-    public boolean isTile(Position position) {
-        return canvas[position.getX()][position.getY()] instanceof Tile;
+    public boolean isGround(Position position) {
+        return canvas[position.getX()][position.getY()] instanceof Ground;
     }
 
     public boolean isBox(Position position) {

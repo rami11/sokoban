@@ -1,4 +1,4 @@
-public class Shape implements ITile {
+public class Shape implements Tile {
     protected String shape;
     protected Position position;
 

@@ -1,4 +1,4 @@
-public class Box extends Shape implements ITile {
+public class Box extends Shape implements Tile {
 
     public Box(Position position) {
         super(position, "□");
