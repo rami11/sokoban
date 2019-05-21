@@ -2,10 +2,12 @@ import java.io.File;
 import java.util.*;
 
 public class Controller {
+    private static final String WORKING_DIR = "../resources/";
+
     private static final String[] LEVELS = {
-            "resource/level1.txt",
-            "resource/level2.txt",
-            "resource/level10.txt",
+            WORKING_DIR  + "level1.txt",
+            WORKING_DIR  + "level2.txt",
+            WORKING_DIR  + "level10.txt",
     };
 
     private Player player;
